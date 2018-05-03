@@ -25,7 +25,7 @@ mysql_get() {
 	IFS=$'\t'$'\n'
 	#arr=($(run "${@}" -e "SHOW GLOBAL STATUS WHERE value REGEXP '^[0-9]';" | egrep "^(Bytes|Slow_|Que|Handl|Table|Selec|Sort_|Creat|Conne|Abort|Binlo|Threa|Innod|Qcach|Key_|Open)" ))
 	#arr=($(run "${@}" -N -e "SHOW GLOBAL STATUS;" | egrep "^(Bytes|Slow_|Que|Handl|Table|Selec|Sort_|Creat|Conne|Abort|Binlo|Threa|Innod|Qcach|Key_|Open)[^ ]+\s[0-9]" ))
-	arr=($(run "${@}" -N -e "SHOW GLOBAL STATUS;" | egrep "^(Bytes|Slow_|Que|Handl|Table|Selec|Sort_|Creat|Conne|Abort|Binlo|Threa|Innod|Qcach|Key_|Open)[^[:space:]]+[[:space:]]+[0-9]+" ))
+	arr=($(run "${@}" -N -e "SHOW GLOBAL STATUS;" | egrep "^(Bytes|Slow_|Que|Handl|Table|Selec|Sort_|Creat|Conne|Com_|Abort|Binlo|Threa|Innod|Qcach|Key_|Open)[^[:space:]]+[[:space:]]+[0-9]+" ))
 	IFS="${oIFS}"
 
 	[ "${#arr[@]}" -lt 3 ] && return 1
@@ -177,6 +177,7 @@ DIMENSION Threads_connected connected absolute 1 1
 DIMENSION Threads_created created incremental 1 1
 DIMENSION Threads_cached cached absolute -1 1
 DIMENSION Threads_running running absolute 1 1
+DIMENSION Max_used_connections maxusedcon absolute 1 1
 
 CHART mysql_$x.thread_cache_misses '' "mysql Threads Cache Misses" "misses" threads mysql.thread_cache_misses area $((mysql_priority + 11)) $mysql_update_every
 DIMENSION misses misses absolute 1 100
@@ -276,6 +277,18 @@ DIMENSION Open_files files absolute 1 1
 
 CHART mysql_$x.files_rate '' "mysql Opened Files Rate" "files/s" files mysql.files_rate line $((mysql_priority + 33)) $mysql_update_every
 DIMENSION Opened_files files incremental 1 1
+
+CHART mysql_$x.volume_io '' "mysql request" "operations/s" sqlvolume volume_io line $((mysql_priority + 34)) $mysql_update_every
+DIMENTION Com_select select incremental 1 1
+DIMENTION Com_insert insert incremental 1 1
+DIMENTION Com_update update incremental 1 1
+DIMENTION Com_delete delete incremental 1 1
+DIMENTION Com_replace replace incremental 1 1
+DIMENTION Com_insert_select insert_select incremental 1 1
+DIMENTION Com_update_multi update_multi incremental 1 1
+DIMENTION Com_delete_multi delete_multi incremental 1 1
+DIMENTION Com_replace_select replace_select incremental 1 1
+DIMENTION Qcache_hits hits incremental 1 1
 EOF
 
 	if [ ! -z "${mysql_data[Binlog_stmt_cache_disk_use]}" ]
@@ -389,6 +402,7 @@ SET Threads_connected = ${mysql_data[Threads_connected]}
 SET Threads_created = ${mysql_data[Threads_created]}
 SET Threads_cached = ${mysql_data[Threads_cached]}
 SET Threads_running = ${mysql_data[Threads_running]}
+SET Max_used_connections = ${mysql_data[Max_used_connections]}
 END
 BEGIN mysql_$x.thread_cache_misses $1
 SET misses = ${mysql_data[Thread_cache_misses]}
@@ -488,6 +502,18 @@ SET Open_files = ${mysql_data[Open_files]}
 END
 BEGIN mysql_$x.files_rate $1
 SET Opened_files = ${mysql_data[Opened_files]}
+END
+BEGIN mysql_$x.volume_io $1
+SET Com_select = ${mysql_data[Com_select]}
+SET Com_insert = ${mysql_data[Com_insert]}
+SET Com_update = ${mysql_data[Com_update]}
+SET Com_delete = ${mysql_data[Com_delete]}
+SET Com_replace = ${mysql_data[Com_replace]}
+SET Com_insert_select = ${mysql_data[Com_insert_select]}
+SET Com_update_multi = ${mysql_data[Com_update_multi]}
+SET Com_delete_multi = ${mysql_data[Com_delete_multi]}
+SET Com_replace_select = ${mysql_data[Com_replace_select]}
+SET Qcache_hits = ${mysql_data[Qcache_hits]}
 END
 VALUESEOF
 
