@@ -278,17 +278,17 @@ DIMENSION Open_files files absolute 1 1
 CHART mysql_$x.files_rate '' "mysql Opened Files Rate" "files/s" files mysql.files_rate line $((mysql_priority + 33)) $mysql_update_every
 DIMENSION Opened_files files incremental 1 1
 
-CHART mysql_$x.volume_io '' "mysql request" "operations/s" sqlvolume volume_io line $((mysql_priority + 34)) $mysql_update_every
-DIMENTION Com_select select incremental 1 1
-DIMENTION Com_insert insert incremental 1 1
-DIMENTION Com_update update incremental 1 1
-DIMENTION Com_delete delete incremental 1 1
-DIMENTION Com_replace replace incremental 1 1
-DIMENTION Com_insert_select insert_select incremental 1 1
-DIMENTION Com_update_multi update_multi incremental 1 1
-DIMENTION Com_delete_multi delete_multi incremental 1 1
-DIMENTION Com_replace_select replace_select incremental 1 1
-DIMENTION Qcache_hits hits incremental 1 1
+CHART mysql_$x.volume_io '' "mysql request" "operations/s" volume_io volume_io line $((mysql_priority + 34)) $mysql_update_every
+DIMENSION Com_select select incremental 1 1
+DIMENSION Com_insert insert incremental 1 1
+DIMENSION Com_update update incremental 1 1
+DIMENSION Com_delete delete incremental 1 1
+DIMENSION Com_replace replace incremental 1 1
+DIMENSION Com_insert_select insert_select incremental 1 1
+DIMENSION Com_update_multi update_multi incremental 1 1
+DIMENSION Com_delete_multi delete_multi incremental 1 1
+DIMENSION Com_replace_select replace_select incremental 1 1
+DIMENSION Qcache_hits hits incremental 1 1
 EOF
 
 	if [ ! -z "${mysql_data[Binlog_stmt_cache_disk_use]}" ]
