@@ -257,7 +257,7 @@ CHARTS = {
             ['Thread_cache_misses', 'misses', 'absolute', 1, 100]
         ]},
     'volume_io': {
-        'Options': [None, 'mysql request', 'operations/s', 'sqlvolume' 'volume_io', 'line'],
+        'options': [None, 'mysql request', 'operations/s', 'volume_io', 'volume_io', 'line'],
         'lines': [
             ['Com_select', 'select', 'incremental'],
             ['Com_insert', 'insert', 'incremental'],
